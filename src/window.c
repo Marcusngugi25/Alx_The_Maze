@@ -1,4 +1,4 @@
-#include "../include/main.h"
+#include "../important/main.h"
 
 /**
  * initialize_SDL - A function to initialize SDL
