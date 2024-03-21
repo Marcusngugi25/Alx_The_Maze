@@ -5,7 +5,7 @@ CC = gcc
 SRC = src/main.c src/window.c src/raycaster.c src/SDL_subfunctions.c \
 	src/colors.c src/angles.c src/color_arithmetic.c src/map.c \
 	src/color_operations.c src/draw_all_things.c src/draw_to_screen.c \
-	src/window_status.c
+	src/window_status.c src/weather.c
 
 # OBJ specifies the .o files
 OBJ = $(SRC:.c=.o)
@@ -31,7 +31,7 @@ CFLAGS = -Wall -Werror -Wextra -pedantic
 
 # This rule builds our executable
 # Makefile should not compile if the header file main.h is missing
-all: include/main.h $(OBJ)
+all: important/main.h $(OBJ)
 	$(CC) $(OBJ) $(CFLAGS) $(SDL2) -o $(NAME)
 
 # This rule deletes all Emacs and Vim temporary files along with the executable
