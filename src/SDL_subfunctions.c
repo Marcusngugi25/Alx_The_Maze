@@ -1,4 +1,4 @@
-#include "../include/main.h"
+#include "../important/main.h"
 
 /**
  * getTicks - A function that returns the time in milliseconds
