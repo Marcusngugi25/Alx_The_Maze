@@ -1,4 +1,4 @@
-#include "../include/main.h"
+#include "../important/main.h"
 
 /**
  * generate_map - A function to generate a map to be rendered for the game.
