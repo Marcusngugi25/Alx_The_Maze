@@ -1,4 +1,4 @@
-#include "weather.h"
+#include "../important/main.h"
 
 #include <stdlib.h>
 #include <time.h>
