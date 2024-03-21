@@ -3,10 +3,11 @@
 
 #include <stdio.h>
 #include <SDL2/SDL.h>
-#include "applied_math.h"
+#include "wapplied_math.h"
 #include "colors.h"
 #include "raycaster.h"
 #include "renderer.h"
+#include "weather.h"
 
 /* Dimensional constants */
 #define SCREEN_WIDTH 640
