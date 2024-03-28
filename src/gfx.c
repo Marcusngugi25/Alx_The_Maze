@@ -1,7 +1,6 @@
 
 #include <stdio.h>
 #include "gfx.h"
-#define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 
 /* Used to identify a texture structure in memory */
