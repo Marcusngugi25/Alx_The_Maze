@@ -1,36 +1,76 @@
-#include "../important/main.h"
+#include <stdio.h>
+#define SDL_MAIN_HANDLED
+#include <SDL2/SDL.h>
 
-/**
- * generate_map - A function to generate a map to be rendered for the game.
- *
- * @worldMap: A 2-dimensional matrix of integers to render the game map
- */
-void generate_map(int (*worldMap)[MAP_WIDTH])
+#include "config.h"
+#include "map.h"
+#include "player.h"
+#include "raycaster.h"
+#include "weather.h"
+
+void renderOverheadMap()
 {
-	int WorldMap[MAP_WIDTH][MAP_HEIGHT] = {
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 3, 0, 3, 0, 3, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 2, 2, 0, 2, 2, 0, 0, 0, 0, 3, 0, 3, 0, 3, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 4, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 4, 0, 0, 0, 0, 5, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 4, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 4, 0, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} };
-	memcpy(worldMap, WorldMap, sizeof(WorldMap));
+    int i, row, col;
+    float mapGridSquareSize = (float)HUD_MAP_SIZE / (float)MAP_GRID_WIDTH;
+    int mapXOffset = (WINDOW_WIDTH - HUD_MAP_SIZE) / 2;
+    int mapYOffset = (WINDOW_HEIGHT - HUD_MAP_SIZE) / 2;
+
+    /* Draw map tiles */
+    for (row = 0; row < MAP_GRID_HEIGHT; row++)
+    {
+        for (col = 0; col < MAP_GRID_WIDTH; col++)
+        {
+            switch (MAP[row][col])
+            {
+            case R:
+                setDrawColor(128, 0, 128, 255);
+                break;
+            case G:
+                setDrawColor(128, 0, 0, 255);
+                break;
+            case B:
+                setDrawColor(255, 255, 0, 255);
+                break;
+            case W:
+                setDrawColor(128, 128, 128, 255);
+                break;
+            default:
+                setDrawColor(255, 255, 255, 255);
+                break;
+            }
+            fillRect((int)(mapGridSquareSize * col) + mapXOffset, (int)(mapGridSquareSize * row) + mapYOffset, mapGridSquareSize, mapGridSquareSize);
+        }
+    }
+
+    /* Draw rays */
+    setDrawColor(200, 100, 50, 255);
+    for (i = 0; i < WINDOW_WIDTH; i++)
+    {
+        Vector3f ray;
+        if (fabs(homogeneousVectorMagnitude(&rays[i].hRay)) < fabs(homogeneousVectorMagnitude(&rays[i].vRay)))
+            ray = rays[i].hRay;
+        else
+            ray = rays[i].vRay;
+        drawLine((int)(playerPos.x * HUD_MAP_SIZE / (float)MAP_PIXEL_WIDTH) + mapXOffset, (int)(playerPos.y * HUD_MAP_SIZE / (float)MAP_PIXEL_HEIGHT + mapYOffset),
+                 (int)((playerPos.x + ray.x) * HUD_MAP_SIZE / (float)MAP_PIXEL_WIDTH) + mapXOffset, (int)((playerPos.y + ray.y) * HUD_MAP_SIZE / (float)MAP_PIXEL_WIDTH) + mapYOffset);
+        if (slowRenderMode)
+        {
+            setDrawColor(200, 0, 0, 255);
+            drawLine((int)(playerPos.x * HUD_MAP_SIZE / (float)MAP_PIXEL_WIDTH) + mapXOffset, (int)(playerPos.y * HUD_MAP_SIZE / (float)MAP_PIXEL_HEIGHT + mapYOffset),
+                     (int)((playerPos.x + PLAYER_SIZE * playerDir.x) * HUD_MAP_SIZE / (float)MAP_PIXEL_WIDTH) + mapXOffset, (int)((playerPos.y + PLAYER_SIZE * playerDir.y) * HUD_MAP_SIZE / (float)MAP_PIXEL_WIDTH) + mapYOffset);
+            setDrawColor(200, 100, 50, 255);
+            SDL_Delay(2);
+            presentRenderer();
+        }
+    }
+
+    /* Draw player line */
+    setDrawColor(200, 0, 0, 255);
+    drawLine((int)(playerPos.x * HUD_MAP_SIZE / (float)MAP_PIXEL_WIDTH) + mapXOffset, (int)(playerPos.y * HUD_MAP_SIZE / (float)MAP_PIXEL_HEIGHT + mapYOffset),
+             (int)((playerPos.x + PLAYER_SIZE * playerDir.x) * HUD_MAP_SIZE / (float)MAP_PIXEL_WIDTH) + mapXOffset, (int)((playerPos.y + PLAYER_SIZE * playerDir.y) * HUD_MAP_SIZE / (float)MAP_PIXEL_WIDTH) + mapYOffset);
+
+    if (slowRenderMode)
+        slowRenderMode = 0;
+    setDrawColor(128, 128, 128, 255);
+    presentRenderer();
 }
