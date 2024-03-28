@@ -1,6 +1,6 @@
-#include "../important/main.h"
-
+#include <SDL2/SDL.h>
 #include <stdlib.h>
+
 #include <time.h>
 #include <stdio.h>
 #include <math.h>
